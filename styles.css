@@ -743,3 +743,36 @@ body.interactive .sideNav{ display: block; }
     text-align: left;
   }
 }
+
+/* =========================================================
+   MOBILE HARD GATE (100% zuverlässig)
+   - Mobile: zeigt nur #mobileGate
+   - Versteckt die komplette normale Seite (.frame)
+   ========================================================= */
+
+#mobileGate{
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: var(--bg);
+  display: none; /* default: desktop -> aus */
+}
+
+/* Mobile detection via CSS media features (sehr robust) */
+@media (hover: none) and (pointer: coarse), (max-width: 900px){
+  /* normale Seite weg */
+  body > .frame{
+    display: none !important;
+  }
+
+  /* gate an */
+  #mobileGate{
+    display: block !important;
+  }
+
+  /* sicherstellen, dass nichts scrollt */
+  html, body{
+    overflow: hidden !important;
+    height: 100% !important;
+  }
+}

@@ -15,41 +15,36 @@
 
 <body>
 
-<div class="loaderOverlay" id="loaderOverlay" aria-hidden="false">
-  <div class="loaderPercent" id="loaderPercent">0%</div>
-</div>
+  <!-- MOBILE GATE: MUSS VOR .frame stehen -->
+  <div class="mobileGate" id="mobileGate" aria-hidden="true">
+    <div class="frame">
+      <header class="header">
+        <a class="brand" href="#" onclick="return false;">JGVISUALS</a>
+        <div class="progress" aria-label="Scroll progress"></div>
+        <a class="about" href="#" onclick="return false;">MOBILE</a>
+      </header>
 
-<div class="mobileGate" id="mobileGate" aria-hidden="true">
-  <div class="frame">
-    <header class="header">
-      <a class="brand" href="#" onclick="return false;">JGVISUALS</a>
-      <div class="progress" aria-label="Scroll progress"></div>
-      <a class="about" href="#" onclick="return false;">MOBILE</a>
-    </header>
+      <main class="pageMain" aria-label="Mobile notice">
+        <section class="pageLayout">
+          <h1 class="pageTitle">DESKTOP</h1>
 
-    <main class="pageMain" aria-label="Mobile notice">
-      <section class="pageLayout">
-        <h1 class="pageTitle">DESKTOP</h1>
+          <div class="pageBody">
+            <p class="pageLead">Diese Portfolio-Seite ist für Desktop optimiert.</p>
+            <div class="pageRule"></div>
+            <p class="pageText">Bitte öffne die Website an einem Laptop oder Desktop-Computer.</p>
+            <p class="pageText">Tipp: Link speichern und später am Desktop öffnen.</p>
+          </div>
 
-        <div class="pageBody">
-          <p class="pageLead">
-            Diese Portfolio-Seite ist für Desktop optimiert.
-          </p>
+          <div class="pageFooterNote">JGVISUALS — desktop only</div>
+        </section>
+      </main>
 
-          <div class="pageRule"></div>
-
-          <p class="pageText">
-            Bitte öffne die Website an einem Laptop oder Desktop-Computer.
-          </p>
-
-          <p class="pageText">
-            Tipp: Wenn du den Link von deinem Smartphone teilst, öffne ihn später am Desktop.
-          </p>
-        </div>
-
-        <div class="pageFooterNote">JGVISUALS — desktop only</div>
-      </section>
-    </main>
+      <footer class="footer">
+        <div class="footer__left"><a href="#" onclick="return false;">IMPRINT</a></div>
+        <div class="footer__right"><a class="outLink" href="#" onclick="return false;">CONTACT</a></div>
+      </footer>
+    </div>
+  </div>
 
     <footer class="footer">
       <div class="footer__left">
