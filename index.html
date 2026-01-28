@@ -15,48 +15,53 @@
 
 <body>
 
-  <!-- MOBILE GATE: MUSS VOR .frame stehen -->
-  <div class="mobileGate" id="mobileGate" aria-hidden="true">
-    <div class="frame">
-      <header class="header">
-        <a class="brand" href="#" onclick="return false;">JGVISUALS</a>
-        <div class="progress" aria-label="Scroll progress"></div>
-        <a class="about" href="#" onclick="return false;">MOBILE</a>
-      </header>
+ <div class="mobileGate" id="mobileGate" aria-hidden="true">
+  <div class="frame">
+    <header class="header">
+      <a class="brand" href="index.html">JGVISUALS</a>
+      <div class="progress" aria-label="Scroll progress"></div>
+      <a class="about" href="about.html">ABOUT</a>
+    </header>
 
-      <main class="pageMain" aria-label="Mobile notice">
-        <section class="pageLayout">
-          <h1 class="pageTitle">DESKTOP</h1>
+    <main class="pageMain" aria-label="Mobile notice">
+      <section class="pageLayout" id="mobileGateLayout">
+        <h1 class="pageTitle" id="mobileGateTitle">DESKTOP</h1>
 
-          <div class="pageBody">
-            <p class="pageLead">Diese Portfolio-Seite ist für Desktop optimiert.</p>
-            <div class="pageRule"></div>
-            <p class="pageText">Bitte öffne die Website an einem Laptop oder Desktop-Computer.</p>
-            <p class="pageText">Tipp: Link speichern und später am Desktop öffnen.</p>
-          </div>
+        <!-- Body column (width will be set to title width via JS like pages.js) -->
+        <div class="pageBody" id="mobileGateBody">
+          <p class="pageLead">
+            Diese Portfolio-Seite ist für Desktop optimiert.
+          </p>
 
-          <div class="pageFooterNote">JGVISUALS — desktop only</div>
-        </section>
-      </main>
+          <div class="pageRule"></div>
 
-      <footer class="footer">
-        <div class="footer__left"><a href="#" onclick="return false;">IMPRINT</a></div>
-        <div class="footer__right"><a class="outLink" href="#" onclick="return false;">CONTACT</a></div>
-      </footer>
-    </div>
-  </div>
+          <h2 class="imprintH">PLEASE USE A DESKTOP</h2>
+          <p class="imprintP">
+            Bitte öffne die Website an einem Laptop oder Desktop-Computer.
+          </p>
+
+          <h2 class="imprintH">TIP</h2>
+          <p class="imprintP">
+            Speichere den Link oder sende ihn dir selbst und öffne ihn später am Desktop.
+          </p>
+        </div>
+
+        <div class="pageFooterNote">JGVISUALS — ALL RIGHTS RESERVED</div>
+      </section>
+    </main>
 
     <footer class="footer">
       <div class="footer__left">
-        <a href="#" onclick="return false;">IMPRINT</a>
+        <a href="imprint.html">IMPRINT</a>
       </div>
 
       <div class="footer__right">
-        <a class="outLink" href="#" onclick="return false;">CONTACT</a>
+        <a class="outLink" href="mailto:jakob.giggenbach99@gmail.com" target="_blank">CONTACT</a>
       </div>
     </footer>
   </div>
 </div>
+
 
 
 

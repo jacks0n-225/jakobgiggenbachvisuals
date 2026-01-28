@@ -632,22 +632,39 @@ body.interactive .sideNav{ display: block; }
   opacity: .95;
   user-select: none;
 }
+/* =========================================================
+   MOBILE HARD GATE (shows only #mobileGate on mobile)
+   ========================================================= */
 
-/* ---------- MOBILE GATE (Desktop only) ---------- */
-.mobileGate{
+#mobileGate{
   position: fixed;
   inset: 0;
   z-index: 10000;
   background: var(--bg);
-  display: none;
+  display: none; /* desktop: off */
 }
 
-.mobileGate.isOpen{
-  display: block;
+@media (hover: none) and (pointer: coarse), (max-width: 900px){
+  body > .frame{
+    display: none !important;
+  }
+
+  #mobileGate{
+    display: block !important;
+  }
+
+  html, body{
+    overflow: hidden !important;
+    height: 100% !important;
+  }
 }
 
-/* Reuse ABOUT-like layout on index without pages.css */
-.mobileGate .pageMain{
+/* =========================================================
+   MobileGate layout — same as ABOUT/IMPRINT (pages.css look)
+   (index.html doesn’t load pages.css, so we mirror the needed parts here)
+   ========================================================= */
+
+#mobileGate .pageMain{
   position: fixed;
   left: var(--pad);
   right: var(--pad);
@@ -656,14 +673,15 @@ body.interactive .sideNav{ display: block; }
   display: block;
 }
 
-.mobileGate .pageLayout{
+#mobileGate .pageLayout{
   position: relative;
   width: 100%;
   height: 100%;
-  --titleW: 520px;
+  --titleW: 520px; /* JS will overwrite */
 }
 
-.mobileGate .pageTitle{
+/* Big top-left title (same as pages.css) */
+#mobileGate .pageTitle{
   position: absolute;
   left: 0;
   top: 0;
@@ -679,7 +697,8 @@ body.interactive .sideNav{ display: block; }
   white-space: nowrap;
 }
 
-.mobileGate .pageBody{
+/* Body column under the title — exact width via --titleW */
+#mobileGate .pageBody{
   position: absolute;
   left: 0;
   top: calc(clamp(72px, 10vw, 140px) * 0.92 + 16px);
@@ -691,7 +710,8 @@ body.interactive .sideNav{ display: block; }
   flex-direction: column;
 }
 
-.mobileGate .pageLead{
+/* Subtitle + rule */
+#mobileGate .pageLead{
   margin: 0;
   font-size: 18px;
   letter-spacing: .02em;
@@ -699,14 +719,7 @@ body.interactive .sideNav{ display: block; }
   opacity: .92;
 }
 
-.mobileGate .pageText{
-  margin: 14px 0 0 0;
-  font-size: 14px;
-  line-height: 1.25;
-  opacity: .9;
-}
-
-.mobileGate .pageRule{
+#mobileGate .pageRule{
   margin: 18px 0 14px 0;
   height: 1px;
   width: 100%;
@@ -714,65 +727,53 @@ body.interactive .sideNav{ display: block; }
   opacity: .6;
 }
 
-.mobileGate .pageFooterNote{
+/* Headings + paragraphs like IMPRINT blocks */
+#mobileGate .imprintH{
+  margin: 18px 0 6px 0;
+  font-size: 18px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .75;
+}
+
+#mobileGate .imprintP{
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.25;
+  opacity: .9;
+}
+
+/* Bottom-right note (same as pages.css) */
+#mobileGate .pageFooterNote{
   position: absolute;
   right: 0;
   bottom: 0;
+
   font-size: 18px;
   letter-spacing: .06em;
   text-transform: uppercase;
   opacity: .75;
+
   line-height: 1;
   text-align: right;
 }
 
-/* mobile responsive for the gate itself */
+/* Responsive fallback if you ever test at narrow widths */
 @media (max-width: 900px){
-  .mobileGate .pageTitle{
+  #mobileGate .pageTitle{
     position: static;
     white-space: normal;
   }
-  .mobileGate .pageBody{
+
+  #mobileGate .pageBody{
     position: static;
     width: 100%;
     margin-top: 14px;
   }
-  .mobileGate .pageFooterNote{
+
+  #mobileGate .pageFooterNote{
     position: static;
     margin-top: 22px;
     text-align: left;
-  }
-}
-
-/* =========================================================
-   MOBILE HARD GATE (100% zuverlässig)
-   - Mobile: zeigt nur #mobileGate
-   - Versteckt die komplette normale Seite (.frame)
-   ========================================================= */
-
-#mobileGate{
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  background: var(--bg);
-  display: none; /* default: desktop -> aus */
-}
-
-/* Mobile detection via CSS media features (sehr robust) */
-@media (hover: none) and (pointer: coarse), (max-width: 900px){
-  /* normale Seite weg */
-  body > .frame{
-    display: none !important;
-  }
-
-  /* gate an */
-  #mobileGate{
-    display: block !important;
-  }
-
-  /* sicherstellen, dass nichts scrollt */
-  html, body{
-    overflow: hidden !important;
-    height: 100% !important;
   }
 }

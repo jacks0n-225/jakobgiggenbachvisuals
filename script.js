@@ -127,6 +127,46 @@ function openMobileGateAndStop(){
   document.body.style.overflow = "hidden";
 }
 
+function measureMobileGateTitle(){
+  const gate = document.getElementById("mobileGate");
+  if (!gate) return;
+
+  const layout = gate.querySelector(".pageLayout");
+  const title  = gate.querySelector(".pageTitle");
+  const body   = gate.querySelector(".pageBody");
+  if (!layout || !title || !body) return;
+
+  const w = title.getBoundingClientRect().width;
+  const px = `${Math.round(w)}px`;
+
+  layout.style.setProperty("--titleW", px);
+  body.style.width = px;
+
+  const rules = gate.querySelectorAll(".pageRule");
+  rules.forEach(r => (r.style.width = "100%"));
+}
+
+// run on load + resize (like pages.js)
+function bindMobileGateMeasure(){
+  const run = () => {
+    measureMobileGateTitle();
+    requestAnimationFrame(measureMobileGateTitle);
+  };
+
+  // after fonts (Big Shoulders)
+  (async () => {
+    try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch {}
+    run();
+  })();
+
+  let t = null;
+  window.addEventListener("resize", () => {
+    clearTimeout(t);
+    t = setTimeout(run, 80);
+  });
+}
+
+
 
 /* ---------- SVG Placeholder ---------- */
 function svgDataURI({ w=1600, h=900, label="PLACEHOLDER", sub="", bg="#2a2a2a", fg="#ffffff" }){
@@ -1100,6 +1140,8 @@ function initBuildAll(){
 }
 
 async function init(){
+  bindMobileGateMeasure();   // ✅ immer binden (kostet nix)
+
   if (isMobileLike()){
     openMobileGateAndStop();
     return; // ✅ stoppt alles: keine Bilder, kein Filmstrip, kein Fetch
