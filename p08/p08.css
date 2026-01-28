@@ -1,0 +1,65 @@
+/* p08 — event / bts editorial */
+
+.p08 p{
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.p08 .p08Lead{
+  align-self: start;
+  padding-right: 10px;
+}
+
+.p08 .p08Kicker{
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .75;
+}
+
+.p08 .p08Title{
+  margin: 0 0 14px 0;
+  font-size: 40px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* layout sizes (compact) */
+.p08 .p08Hero{ min-height: 320px; }
+.p08 .p08FullBleed{ min-height: 360px; }
+.p08 .p08Wide{ min-height: 300px; }
+
+.p08 .p08CaptionCol{
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.p08 .p08Caption{
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.15;
+  opacity: .9;
+}
+
+.p08 .p08Rule{
+  height: 1px;
+  width: 100%;
+  background: rgba(255,255,255,.35);
+  opacity: .6;
+}
+
+.p08 .p08Meta{
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  opacity: .75;
+  line-height: 1.2;
+}
+
+.p08 .p08Small{ min-height: 240px; }
+.p08 .p08OutroImg{ min-height: 300px; }

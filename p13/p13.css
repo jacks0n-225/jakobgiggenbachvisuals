@@ -1,0 +1,64 @@
+/* p13 — editorial / cyberpunk study */
+
+.p13 p{
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.p13 .p13Lead{
+  align-self: start;
+  padding-right: 10px;
+}
+
+.p13 .p13Kicker{
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .75;
+}
+
+.p13 .p13Title{
+  margin: 0 0 14px 0;
+  font-size: 40px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.p13 .p13Hero{ min-height: 320px; }
+.p13 .p13FullBleed{ min-height: 360px; }
+.p13 .p13Wide{ min-height: 300px; }
+
+.p13 .p13CaptionCol{
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.p13 .p13Caption{
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.15;
+  opacity: .9;
+}
+
+.p13 .p13Rule{
+  height: 1px;
+  width: 100%;
+  background: rgba(255,255,255,.35);
+  opacity: .6;
+}
+
+.p13 .p13Meta{
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  opacity: .75;
+  line-height: 1.2;
+}
+
+.p13 .p13Small{ min-height: 240px; }
+.p13 .p13OutroImg{ min-height: 300px; }

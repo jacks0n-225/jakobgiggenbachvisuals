@@ -1,0 +1,602 @@
+:root{
+  --bg: #212121;
+  --text: #ffffff;
+
+  --pad: 18px;
+  --headerH: 64px;
+  --footerH: 64px;
+
+  --tickWMin: 1.5px;
+  --tickWMax: 34px;
+  --tickH: 16px;
+  --tickGap: 6px;
+  --tickBorder: 1.5px;
+
+  --frameW: 100px;
+  --heroW: 60vw;
+  --heroMaxW: 1100px;
+
+  --stageTop: 0px;
+  --stageH: 520px;
+
+  --sideGap: 10px;
+
+  /* wird per JS gesetzt */
+  --heroLeftPx: 0px;
+  --heroRightPx: 0px;
+}
+
+*{ box-sizing:border-box; }
+html, body{ height:100%; }
+
+body{
+  margin:0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Big Shoulders", system-ui;
+  font-weight: 600;
+  letter-spacing: .03em;
+  overflow: hidden;
+  transition: background-color .25s ease;
+}
+
+/* Header / Footer */
+.header, .footer{
+  position: fixed;
+  left: var(--pad);
+  right: var(--pad);
+  z-index: 10;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background: transparent;
+  padding: 10px 0;
+}
+
+.header{ top: var(--pad); height: var(--headerH); }
+.footer{ bottom: var(--pad); height: var(--footerH); }
+
+.brand, .about, .footer a{
+  color: var(--text);
+  text-decoration:none;
+  font-size: 22px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.brand:hover, .about:hover, .footer a:hover{ opacity:.75; }
+
+.footer__left, .footer__right{
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 20px;
+  text-transform: uppercase;
+}
+.about{ text-align:right; }
+.footer__right{ text-align:right; align-items:flex-end; }
+
+/* Scroll hint centered inside footer */
+.scrollHint{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  opacity: .9;
+}
+.scrollHint:hover{ opacity: .75; }
+
+/* Vertikaler Strich */
+.scrollHint::before{
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 16px);
+  transform: translateX(-50%);
+
+  width: 1px;
+  height:20px;
+  background: currentColor;
+}
+
+/* ---------------- Header Center (Ticks + Filter darunter) ---------------- */
+/* Wichtig: Ticks bleiben auf Headerhöhe, Filter ist darunter (ohne Layoutshift). */
+.headerCenter{
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+/* Progress */
+.progress{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: var(--tickGap);
+  height: 100%;
+  min-width: 240px;
+  flex-wrap: nowrap;
+  overflow: visible;
+}
+
+.tick{
+  width: var(--tickWMin);
+  height: var(--tickH);
+  background: rgba(255,255,255,.25);
+  border: 0 solid rgba(255,255,255,0);
+  position: relative;
+  flex: 0 0 auto;
+}
+.tick .tickX{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  font-size: 18px;
+  line-height: 1;
+  color: rgba(255,255,255,.9);
+
+  opacity: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+
+  /* ✅ bigger hit-area */
+  padding: 10px 12px;         /* <- KLICKFLÄCHE */
+  border-radius: 999px;
+}
+
+/* Smooth transitions */
+.tick{
+  transition: transform .12s ease, width .12s ease, border-color .12s ease;
+  transform-origin: center;
+}
+
+.tick .tickX{
+  transition: transform .12s ease, opacity .12s ease;
+  transform-origin: center;
+}
+
+/* ✅ interactive: when hovering the active tick area, scale both */
+body.interactive .tick:hover{
+  transform: scale(1.08);
+}
+
+body.interactive .tick:hover .tickX{
+  transform: translate(-50%, -50%) scale(1.25);
+}
+
+/* Filter UI unter den Ticks (zentriert, 12px wie SCROLL) */
+.filterWrap{
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  margin-top: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 12px;
+  pointer-events: auto;
+}
+
+.filterToggle,
+.filterMenu button{
+  font-family: "Big Shoulders", system-ui;
+  font-weight: 600;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+
+  font-size: 12px; /* exakt wie "SCROLL" */
+  line-height: 1;
+  opacity: .9;
+}
+
+.filterToggle:hover{ opacity: .75; }
+
+.filterMenu{
+  display: none; /* per JS toggled */
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+/* Default: beide leicht ausgegraut */
+.filterOpt{
+  transition: opacity .15s ease;
+}
+.filterOpt:hover{ opacity: .75; }
+
+
+
+.filterClose{
+  font-size: 18px;
+  line-height: 1;
+  opacity: .8;
+  transform: translateY(-1px);
+}
+.filterClose:hover{ opacity: 1; }
+
+/* Main */
+.main{
+  position: fixed;
+  left: var(--pad);
+  right: var(--pad);
+  top: calc(var(--pad) + var(--headerH));
+  bottom: calc(var(--pad) + var(--footerH));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Cap all project media to filmstrip height (stageH is set by JS) */
+.projectViewer .media,
+.projectViewer .media img{
+  max-height: var(--stageH);
+}
+
+/* Filmstrip (IDLE) */
+.film{
+  width: 100%;
+  height: 100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.film__scroller{
+  width: 100%;
+  height: min(74vh, 720px);
+  display:flex;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 8px;
+  padding-inline: var(--sidePad, 20px);
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.film__scroller::-webkit-scrollbar{ display:none; }
+
+.frameItem{
+  flex: 0 0 auto;
+  width: var(--frameW);
+  min-width: var(--frameW);
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  cursor: pointer;
+}
+.frameItem img{
+  height: 100%;
+  width: auto;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display:block;
+  filter: grayscale(1) contrast(1.05);
+  transition: filter .18s ease, opacity .18s ease;
+  opacity: .8;
+}
+body:not(.interactive) .frameItem:hover img{
+  filter: grayscale(0) contrast(1.02);
+  opacity: 1;
+}
+
+/* Hide filmstrip when interactive */
+body.interactive .film__scroller{
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------------- PROJECT VIEWER (INTERACTIVE) ---------------- */
+.projectViewer{
+  position: fixed;
+  left: var(--pad);
+  right: var(--pad);
+  top: var(--stageTop);
+  height: var(--stageH);
+  z-index: 4;
+  display: none;
+}
+body.interactive .projectViewer{ display: block; }
+
+.projectScroll{
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: none;
+  scrollbar-width: none;
+}
+.projectScroll::-webkit-scrollbar{ display:none; }
+
+.heroWrap{
+  width: min(var(--heroW), var(--heroMaxW));
+  margin: 0 auto;
+  height: 100%;
+}
+.hero{
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+.hero img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display:block;
+}
+
+.heroTitle{
+  position: absolute;
+  left: 18px;
+  top: 14px;
+  text-transform: uppercase;
+  line-height: 1;
+  z-index: 2;
+  text-shadow: 0 1px 14px rgba(0,0,0,.35);
+}
+.heroTitle .t1{ font-size: 54px; letter-spacing: .04em; }
+.heroTitle .t2{ margin-top: 6px; font-size: 34px; letter-spacing: .06em; opacity: .9; }
+
+.projectMount{ width: 100%; }
+
+/* Default Grid helpers */
+.projectContent{
+  width: min(var(--heroW), var(--heroMaxW));
+  margin: 34px auto 0;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 14px;
+}
+
+.block{ background: transparent; padding: 0; }
+.block p{ font-size: 22px; line-height: 1.2; margin: 0; opacity: .92; }
+
+.media{ overflow: hidden; }
+.media img{ width: 100%; height: 100%; display:block; object-fit: cover; }
+
+.span-12{ grid-column: span 12; }
+.span-8{ grid-column: span 8; }
+.span-7{ grid-column: span 7; }
+.span-6{ grid-column: span 6; }
+.span-5{ grid-column: span 5; }
+.span-4{ grid-column: span 4; }
+.span-3{ grid-column: span 3; }
+
+/* ---------- side previews + arrow overlays ---------- */
+.sideNav{
+  position: fixed;
+  z-index: 8;
+  top: var(--stageTop);
+  height: var(--stageH);
+  left: var(--pad);
+  right: var(--pad);
+  pointer-events: none;
+  display: none;
+}
+body.interactive .sideNav{ display: block; }
+
+.sideSlot{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+}
+
+.sideSlot.left{
+  left: 0;
+  width: max(0px, calc(var(--heroLeftPx) - var(--sideGap)));
+}
+.sideSlot.right{
+  left: calc(var(--heroRightPx) + var(--sideGap));
+  right: 0;
+}
+
+.sideSlot img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(1) contrast(1.05);
+  opacity: .1;
+  transition: filter .18s ease, opacity .18s ease;
+}
+
+.sideOverlay{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.22);
+  pointer-events: none;
+  transition: opacity .18s ease;
+}
+
+.sideBtn{
+  position: absolute;
+  inset: 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sideBtn .arrow{
+  font-size: 56px;
+  line-height: 1;
+  opacity: 0;
+  transform: translateY(-1px);
+  transition: opacity .18s ease;
+}
+
+.sideSlot:hover img{
+  filter: grayscale(0) contrast(1.02);
+  opacity: .6;
+}
+.sideSlot:hover .arrow{ opacity: 1; }
+.sideSlot:hover .sideOverlay{ opacity: .05; }
+
+
+/* Footer center X (pages) */
+.footerX{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 22px;   /* optisch = Wortgröße */
+  height: 22px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--text);
+  text-decoration: none;
+  opacity: .9;
+}
+.footerX:hover{ opacity: .75; }
+
+.footerX__icon{
+  position: relative;
+  width: 18px;
+  height: 18px;
+}
+
+.footerX__icon::before,
+.footerX__icon::after{
+  content:"";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 1.5px;            /* gleiche Strichstärke wie deine UI */
+  background: currentColor;
+  transform-origin: center;
+}
+
+.footerX__icon::before{
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.footerX__icon::after{
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+
+/* ---------- side previews: round nav button + thin arrow ---------- */
+
+/* Make the entire slot clickable, but button visually centered */
+.sideBtn{
+  position: absolute;
+  inset: 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* New circular button */
+.navBtn{
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+
+  display: grid;
+  place-items: center;
+
+  /* subtle, editorial */
+  background: rgba(0,0,0,.18);
+  border: 1px solid rgba(255,255,255,.16);
+  box-shadow: 0 6px 24px rgba(0,0,0,.25);
+
+  /* faint by default */
+  opacity: .98;
+  transform: scale(.98);
+
+  transition: opacity .18s ease, transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+/* Thin-line arrow */
+.navIco{
+  width: 20px;
+  height: 20px;
+  display:block;
+}
+
+.navIco path{
+  fill: none;
+  stroke: rgba(255,255,255,.9);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  /* faint by default */
+  opacity: .55;
+  transition: opacity .18s ease;
+}
+
+/* Keep your existing behavior: image gets colorful & more opaque on hover */
+.sideSlot:hover img{
+  filter: grayscale(0) contrast(1.02);
+  opacity: .8;
+}
+.sideSlot:hover .sideOverlay{ opacity: .05; }
+
+/* On hover: button becomes visible + slightly larger */
+.sideSlot:hover .navBtn{
+  opacity: .85;
+  transform: scale(1.06);
+  border-color: rgba(255,255,255,.35);
+  background: rgba(0,0,0,.26);
+}
+
+.sideSlot:hover .navIco path{
+  opacity: 1;
+}
+
+/* Optional: even clearer when hovering directly on the button */
+.sideBtn:hover .navBtn{
+  opacity: 1;
+  transform: scale(1.1);
+  border-color: rgba(255,255,255,.55);
+}
+
+/* Hide old text arrows if still present */
+.sideBtn .arrow{ display:none; }

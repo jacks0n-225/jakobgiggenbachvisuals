@@ -1,0 +1,61 @@
+/* p16 — webdesign / HolzART Briegel */
+
+.p16 p{
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.p16 .p16Kicker{
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .75;
+}
+
+.p16 .p16Title{
+  margin: 0 0 14px 0;
+  font-size: 40px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.p16 .p16Text{
+  max-width: 72ch;
+  opacity: .92;
+}
+
+/* -------- SCROLL IMAGE -------- */
+
+/* Container: KEINE Höhe */
+.p16 .p16ScrollShot{
+  width: 100%;
+  overflow: visible;
+}
+
+/* Bild: skaliert nur über Breite */
+.p16 .p16ScrollShot img{
+  width: 100%;        /* 👈 maximale Breite */
+  height: auto;       /* 👈 volle Länge bleibt erhalten */
+  display: block;
+  object-fit: initial; /* explizit: kein fit */
+  background: none;
+}
+
+/* p16 — long scroll screenshot must NOT be capped to stage height */
+.p16 .p16ScrollShot{
+  overflow: visible;            /* nicht abschneiden */
+  height: auto !important;
+  max-height: none !important;  /* WICHTIG: Stage-Cap killen */
+}
+
+/* überschreibt globales .media img{height:100%; object-fit:cover;} */
+.p16 .p16ScrollShot img{
+  display: block;
+  width: 100%;
+  height: auto !important;      /* WICHTIG: keine Container-Höhe erzwingen */
+  max-height: none !important;  /* WICHTIG: kein Stage-Cap */
+  object-fit: unset !important; /* egal, aber verhindert cover/contain */
+  background: transparent !important;
+}

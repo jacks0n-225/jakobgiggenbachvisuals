@@ -1,0 +1,139 @@
+/* p17 — KANU / Starthub Augsburg — Reels (with video) */
+
+.p17 p{
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+/* Lead/Textblock */
+.p17 .p17Lead{
+  align-self: start;
+  padding-right: 0;
+}
+
+.p17 .p17Kicker{
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .75;
+}
+
+.p17 .p17Title{
+  margin: 0 0 14px 0;
+  font-size: 40px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.p17 .p17Body{
+  margin: 0 0 10px 0;
+  max-width: 82ch;      /* editorial feel */
+  opacity: .92;
+}
+
+.p17 .p17Rule{
+  height: 1px;
+  width: 100%;
+  background: rgba(255,255,255,.35);
+  opacity: .6;
+  margin: 12px 0 12px 0;
+}
+
+.p17 .p17Meta{
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  opacity: .75;
+  line-height: 1.2;
+}
+
+/* Video block: wirkt wie ein hero content */
+.p17 .p17Video{
+  min-height: 420px;
+}
+
+/* Wrapper damit Button overlay stabil ist */
+.p17 .p17VideoWrap{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Video wie deine Bilder (kein Balken-Look) */
+.p17 .p17VideoEl{
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;          /* füllt den Frame */
+  background: transparent;
+  cursor: pointer;            /* click toggles play/pause */
+}
+
+/* Round play/pause button – eher subtil */
+.p17 .p17VideoBtn{
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+
+  border: 1.5px solid rgba(255,255,255,.45);
+  background: rgba(0,0,0,.18);
+  color: #fff;
+
+  cursor: pointer;
+  opacity: .45;
+  display: grid;
+  place-items: center;
+
+  transition: opacity .15s ease, transform .15s ease, border-color .15s ease, background .15s ease;
+}
+
+.p17 .p17VideoWrap:hover .p17VideoBtn{
+  opacity: .85;
+  transform: scale(1.05);
+  border-color: rgba(255,255,255,.85);
+  background: rgba(0,0,0,.28);
+}
+
+/* Icon: Play triangle by default */
+.p17 .p17VideoIcon{
+  width: 0;
+  height: 0;
+  border-left: 12px solid currentColor;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  transform: translateX(1px);
+  opacity: .9;
+}
+
+/* When playing: pause bars */
+.p17 .p17VideoWrap.isPlaying .p17VideoIcon{
+  width: 14px;
+  height: 16px;
+  border: 0;
+  position: relative;
+  transform: none;
+}
+
+.p17 .p17VideoWrap.isPlaying .p17VideoIcon::before,
+.p17 .p17VideoWrap.isPlaying .p17VideoIcon::after{
+  content:"";
+  position: absolute;
+  top: 0;
+  width: 4px;
+  height: 16px;
+  background: currentColor;
+  opacity: .9;
+}
+
+.p17 .p17VideoWrap.isPlaying .p17VideoIcon::before{ left: 2px; }
+.p17 .p17VideoWrap.isPlaying .p17VideoIcon::after{ right: 2px; }
+
+/* optional small photos (wenn du b/c nutzt) */
+.p17 .p17Small{ min-height: 240px; }

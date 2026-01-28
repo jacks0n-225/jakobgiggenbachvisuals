@@ -1,0 +1,219 @@
+/* =========================
+   ABOUT / IMPRINT — pages.css (JS-driven column width)
+   - JS sets .pageLayout { --titleW: Npx }
+   - .pageBody uses that exact width
+   ========================= */
+
+.pageMain{
+  position: fixed;
+  left: var(--pad);
+  right: var(--pad);
+  top: calc(var(--pad) + var(--headerH));
+  bottom: calc(var(--pad) + var(--footerH));
+  display: block;
+}
+
+.pageLayout{
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  /* JS will overwrite this with the exact pixel width */
+  --titleW: 520px;
+}
+
+/* Big top-left title */
+.pageTitle{
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 0;
+
+  font-size: clamp(72px, 10vw, 140px);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  line-height: .9;
+  opacity: .95;
+
+  /* Keep title as a single measured block */
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Body column under the title — EXACT width via --titleW */
+.pageBody{
+  position: absolute;
+  left: 0;
+  top: calc(clamp(72px, 10vw, 140px) * 0.92 + 16px);
+
+  width: var(--titleW);
+  max-width: 100%;
+
+  /* editorial spacing */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Text rhythm */
+.pageLead{
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: .02em;
+  line-height: 1.25;
+  opacity: .92;
+}
+
+.pageText{
+  margin: 14px 0 0 0;
+  font-size: 14px;
+  line-height: 1.25;
+  opacity: .9;
+}
+
+.pageRule{
+  margin: 18px 0 14px 0;
+  height: 1px;
+  width: 100%;
+  background: rgba(255,255,255,.35);
+  opacity: .6;
+}
+
+/* bottom-left links */
+.pageLinks{
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.outLink{
+  color: var(--text);
+  text-decoration: none;
+  font-size: 18px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  line-height: 1;
+  opacity: .9;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.outLink:hover{ opacity: .7; }
+
+/* arrow rotated 45° (NE) */
+.outArrow{
+  display: inline-block;
+  transform: rotate(-45deg);
+  font-size: 18px;
+  line-height: 1;
+  opacity: .9;
+}
+
+/* bottom-right note */
+.pageFooterNote{
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  font-size: 18px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  opacity: .75;
+  line-height: 1;
+  text-align: right;
+}
+
+/* ABOUT: clients bottom-right */
+.pageAside{
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  transform: translateY(-42px);
+  width: min(44ch, 36%);
+  text-align: right;
+}
+
+.asideTitle{
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .75;
+}
+
+.clients{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  font-size: 14px;
+  line-height: 1.25;
+  opacity: .9;
+}
+
+/* IMPRINT blocks — fits inside pageBody width via JS */
+.imprintGrid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 26px;
+  width: var(--titleW);
+  max-width: 100%;
+}
+
+.imprintH{
+  margin: 0 0 6px 0;
+  font-size: 18px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .75;
+}
+
+.imprintP{
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.25;
+  opacity: .9;
+}
+
+.inlineLink{
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,.35);
+  padding-bottom: 1px;
+  opacity: .95;
+}
+.inlineLink:hover{
+  opacity: .7;
+  border-bottom-color: rgba(255,255,255,.6);
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .pageTitle{
+    position: static;
+    white-space: normal;
+  }
+
+  .pageBody{
+    position: static;
+    width: 100%;
+    margin-top: 14px;
+  }
+
+  .pageAside{
+    position: static;
+    transform: none;
+    margin-top: 22px;
+    text-align: left;
+    width: 100%;
+  }
+
+  .imprintGrid{
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+}

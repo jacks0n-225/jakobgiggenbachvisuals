@@ -1,0 +1,51 @@
+/* p15 — product photography / Bohoria */
+
+.p15 p{
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.p15 .p15Lead{
+  align-self: start;
+  padding-right: 10px;
+}
+
+.p15 .p15Kicker{
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .75;
+}
+
+.p15 .p15Title{
+  margin: 0 0 14px 0;
+  font-size: 40px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* Single hero – viel Ruhe */
+/* Produkt darf klar lesbar bleiben */
+/* p15 — product photography / Bohoria */
+
+.p15 p{
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.p15 .p15Hero{
+  min-height: 420px;
+  height: 60vh;                 /* 👈 wächst & schrumpft mit Screen */
+  max-height: 640px;
+  overflow: hidden;
+}
+
+/* Bild verhält sich wie bei allen anderen Projekten */
+.p15 .p15Hero img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;            /* 👈 KEY */
+  background: transparent;
+}

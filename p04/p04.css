@@ -1,0 +1,140 @@
+/* ================================
+   p04 — Event Editorial Layout
+   Variant D: Portrait + Landscape
+   ================================ */
+
+.p04 p{
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+/* ---------------- Lead ---------------- */
+
+.p04 .p04Lead{
+  align-self: start;
+  padding-right: 10px;
+}
+
+.p04 .p04Kicker{
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .75;
+}
+
+.p04 .p04Title{
+  margin: 0 0 14px 0;
+  font-size: 40px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* ---------------- Caption / Meta ---------------- */
+
+.p04 .p04CaptionCol{
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.p04 .p04Caption{
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.15;
+  opacity: .9;
+}
+
+.p04 .p04Rule{
+  height: 1px;
+  width: 100%;
+  background: rgba(255,255,255,.35);
+  opacity: .6;
+}
+
+.p04 .p04Meta{
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  opacity: .75;
+  line-height: 1.2;
+}
+
+/* ---------------- Grid Logic ---------------- */
+
+/*
+WICHTIG:
+Wir überschreiben hier bewusst die Grid-Platzierung,
+damit Bild j (Portrait) NICHT alleine steht.
+*/
+
+/* Erste Bildreihe: zwei Querbilder */
+.p04 .p04Wide{
+  min-height: 260px;
+}
+
+/* Portrait j + Querbild nebeneinander */
+.p04 .p04Portrait{
+  min-height: 360px;
+  grid-column: span 4; /* NICHT mehr dominant */
+}
+
+.p04 .p04Portrait img{
+  object-fit: cover;
+}
+
+/* Direkt folgendes Bild rutscht automatisch daneben */
+.p04 .p04Portrait + .media{
+  grid-column: span 8;
+  min-height: 360px;
+}
+
+/* ---------------- Hero / Statement ---------------- */
+
+.p04 .p04FullBleed{
+  min-height: 380px;
+}
+
+/* ---------------- Content Blocks ---------------- */
+
+.p04 .p04BigRight{
+  min-height: 360px;
+}
+
+.p04 .p04Mid{
+  min-height: 300px;
+}
+
+/* ---------------- Outro ---------------- */
+
+.p04 .p04Outro{
+  align-self: start;
+}
+
+.p04 .p04OutroImg{
+  min-height: 280px;
+}
+
+/* ---------------- Closing Grid ---------------- */
+
+.p04 .p04Small{
+  min-height: 220px;
+}
+
+/* ---------------- Subtle Editorial Framing ---------------- */
+
+.p04 .media{
+  position: relative;
+}
+
+.p04 .media::after{
+  content:"";
+  position:absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid rgba(255,255,255,.12);
+  opacity: .55;
+}
