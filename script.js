@@ -260,6 +260,9 @@ function centerIndexInstant(idx){
 }
 
 /* ---------- LOADER OVERLAY (Filmstrip hero preloads) ---------- */
+let loaderStartTs = 0;
+const LOADER_MIN_MS = 650; // minimum sichtbar (sonst wirkt es "kaputt")
+
 function setLoaderPercent(pct){
   if (!loaderPercent) return;
   loaderPercent.textContent = `${clamp(Math.round(pct), 0, 100)}%`;
@@ -267,16 +270,26 @@ function setLoaderPercent(pct){
 
 function finishLoader(){
   if (!loaderOverlay) return;
-  loaderOverlay.classList.add("isDone");
-  loaderOverlay.setAttribute("aria-hidden", "true");
+
+  const elapsed = performance.now() - loaderStartTs;
+  const wait = Math.max(0, LOADER_MIN_MS - elapsed);
+
   setTimeout(() => {
-    try { loaderOverlay.remove(); } catch {}
-  }, 320);
+    loaderOverlay.classList.add("isDone");
+    loaderOverlay.setAttribute("aria-hidden", "true");
+    setTimeout(() => {
+      try { loaderOverlay.remove(); } catch {}
+    }, 320);
+  }, wait);
 }
 
 function preloadFilmstripHeroesWithProgress(){
-  if (!loaderOverlay) return;
+  if (!loaderOverlay || !loaderPercent) return;
 
+  loaderStartTs = performance.now();
+  setLoaderPercent(0);
+
+  // wichtig: visibleIndices muss bereits gesetzt sein!
   const sources = visibleIndices
     .map((g) => PROJECTS[g]?.hero)
     .filter(Boolean);
@@ -289,29 +302,34 @@ function preloadFilmstripHeroesWithProgress(){
   }
 
   let done = 0;
-  setLoaderPercent(0);
 
   const bump = () => {
     done++;
     const pct = (done / total) * 100;
     setLoaderPercent(pct);
     if (done >= total){
-      setTimeout(() => {
-        setLoaderPercent(100);
-        finishLoader();
-      }, 120);
+      setLoaderPercent(100);
+      finishLoader();
     }
   };
 
-  // parallel preload (nur heroes)
   for (const src of sources){
     const img = new Image();
     img.decoding = "async";
+
+    // Trick: selbst wenn Browser cached -> onload kommt zuverlässig
     img.onload = bump;
     img.onerror = bump;
+
     img.src = src;
+
+    // fallback: wenn onload in seltenen Fällen nicht feuert
+    setTimeout(() => {
+      if (img.complete) bump();
+    }, 4000);
   }
 }
+
 
 /* ---------- Filmstrip Hero loading (batch after first paint) ---------- */
 let filmHeroToken = 0;
@@ -1142,26 +1160,37 @@ function initBuildAll(){
 }
 
 async function init(){
-  bindMobileGateMeasure();   // ✅ immer binden (kostet nix)
+  // Mobile gate (layout measurement kostet nix)
+  bindMobileGateMeasure();
 
+  // Wenn Mobile: sofort stop
   if (isMobileLike()){
     openMobileGateAndStop();
-    return; // ✅ stoppt alles: keine Bilder, kein Filmstrip, kein Fetch
+    return;
   }
-  // stabiler Loader-Text (Font-Metriken)
+
+  // 1) Filter/visibleIndices muss stehen, bevor Loader preloads startet
+  initVisibleAll();
+
+  // 2) LOADER sofort starten (nicht erst nach fonts/build)
+  preloadFilmstripHeroesWithProgress();
+
+  // 3) Fonts parallel abwarten (nicht blockierend fürs Loader-Startgefühl)
   try{
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
   }catch{}
 
-  initVisibleAll();
+  // 4) Jetzt DOM aufbauen
   initBuildAll();
 
+  // 5) Bindings
   bindFilmstripWheel();
   bindInteractiveWheel();
   bindScrollHint();
   bindHome();
   bindFilterUI();
 
+  // 6) Startposition / States
   const start = Math.min(1, Math.max(0, visibleCount() - 1));
   centerIndexInstant(start);
   setActiveIndex(start);
@@ -1171,14 +1200,11 @@ async function init(){
 
   body.style.backgroundColor = DEFAULT_BG;
 
-  // Filmstrip heroes batches
+  // 7) Filmstrip heroes in batches (UI smooth)
   requestAnimationFrame(() => {
     setFilmHeroNow(activeIndex);
     scheduleFilmHeroesLoadAll(activeIndex);
   });
-
-  // ✅ LOADER: Prozent bis alle Filmstrip-Heroes initial geladen/fehlerhaft
-  preloadFilmstripHeroesWithProgress();
 }
 
 window.addEventListener("resize", () => {
