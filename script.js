@@ -77,6 +77,8 @@ const tickX = [];
 const frames = [];
 const imgs   = [];
 
+
+
 /* ---------- Registry ---------- */
 const PROJECTS = PROJECT_IDS.map((id, i) => ({
   id,
