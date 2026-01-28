@@ -92,6 +92,42 @@ const PROJECTS = PROJECT_IDS.map((id, i) => ({
   tags: (i % 2 === 0) ? ["photo"] : ["video"]
 }));
 
+function isMobileLike(){
+  // 1) echte Touch Phones / kleine Viewports
+  const small = Math.min(window.innerWidth, window.innerHeight) <= 900;
+
+  // 2) touch device heuristic
+  const touch =
+    ("ontouchstart" in window) ||
+    (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
+
+  // 3) UA fallback (für alte iPhones/Android Browser)
+  const ua = navigator.userAgent || "";
+  const uaMobile = /Android|iPhone|iPod|Windows Phone|IEMobile|Opera Mini/i.test(ua);
+
+  // Entscheidend: small + (touch oder UA)
+  return small && (touch || uaMobile);
+}
+
+function openMobileGateAndStop(){
+  const gate = document.getElementById("mobileGate");
+  if (gate){
+    gate.classList.add("isOpen");
+    gate.setAttribute("aria-hidden", "false");
+  }
+
+  // Loader ausblenden falls vorhanden (damit nur die Gate-Seite sichtbar ist)
+  const loader = document.getElementById("loaderOverlay");
+  if (loader){
+    loader.remove();
+  }
+
+  // Scroll/Body Freeze (sicher)
+  document.documentElement.style.overflow = "hidden";
+  document.body.style.overflow = "hidden";
+}
+
+
 /* ---------- SVG Placeholder ---------- */
 function svgDataURI({ w=1600, h=900, label="PLACEHOLDER", sub="", bg="#2a2a2a", fg="#ffffff" }){
   const safe = (s) => String(s).replace(/[<>&]/g,"");
@@ -1064,6 +1100,10 @@ function initBuildAll(){
 }
 
 async function init(){
+  if (isMobileLike()){
+    openMobileGateAndStop();
+    return; // ✅ stoppt alles: keine Bilder, kein Filmstrip, kein Fetch
+  }
   // stabiler Loader-Text (Font-Metriken)
   try{
     if (document.fonts && document.fonts.ready) await document.fonts.ready;

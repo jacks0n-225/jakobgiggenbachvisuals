@@ -632,3 +632,114 @@ body.interactive .sideNav{ display: block; }
   opacity: .95;
   user-select: none;
 }
+
+/* ---------- MOBILE GATE (Desktop only) ---------- */
+.mobileGate{
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: var(--bg);
+  display: none;
+}
+
+.mobileGate.isOpen{
+  display: block;
+}
+
+/* Reuse ABOUT-like layout on index without pages.css */
+.mobileGate .pageMain{
+  position: fixed;
+  left: var(--pad);
+  right: var(--pad);
+  top: calc(var(--pad) + var(--headerH));
+  bottom: calc(var(--pad) + var(--footerH));
+  display: block;
+}
+
+.mobileGate .pageLayout{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  --titleW: 520px;
+}
+
+.mobileGate .pageTitle{
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 0;
+
+  font-size: clamp(72px, 10vw, 140px);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  line-height: .9;
+  opacity: .95;
+
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.mobileGate .pageBody{
+  position: absolute;
+  left: 0;
+  top: calc(clamp(72px, 10vw, 140px) * 0.92 + 16px);
+
+  width: var(--titleW);
+  max-width: 100%;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.mobileGate .pageLead{
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: .02em;
+  line-height: 1.25;
+  opacity: .92;
+}
+
+.mobileGate .pageText{
+  margin: 14px 0 0 0;
+  font-size: 14px;
+  line-height: 1.25;
+  opacity: .9;
+}
+
+.mobileGate .pageRule{
+  margin: 18px 0 14px 0;
+  height: 1px;
+  width: 100%;
+  background: rgba(255,255,255,.35);
+  opacity: .6;
+}
+
+.mobileGate .pageFooterNote{
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  font-size: 18px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  opacity: .75;
+  line-height: 1;
+  text-align: right;
+}
+
+/* mobile responsive for the gate itself */
+@media (max-width: 900px){
+  .mobileGate .pageTitle{
+    position: static;
+    white-space: normal;
+  }
+  .mobileGate .pageBody{
+    position: static;
+    width: 100%;
+    margin-top: 14px;
+  }
+  .mobileGate .pageFooterNote{
+    position: static;
+    margin-top: 22px;
+    text-align: left;
+  }
+}
