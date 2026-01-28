@@ -6,7 +6,25 @@
    - Ticks wie Scrollbar (Idle-Filmstrip -> aktiver Tick folgt Scroll-Progress)
    - FIX: Beim Klick auf Filmstrip wird Tick-UI sofort auf Interactive-Variante gerendert
 
+   + FILTER EXTENSION:
+   - Tags im Registry (photo/video)
+   - visibleIndices mapping (global -> visible order)
+   - Rebuild von Filmstrip + Ticks ohne Lücken
+   - Filter-Aktion in Interactive: erst exitInteractive, dann rebuild/apply
+   - Wheel reset + stage metrics/padding in rAF
 
+   + PERFORMANCE OPTIMIZATIONS (FILMSTRIP FAST):
+   - Scroll/Tick-Sync rAF-throttled
+   - Filmstrip-Hero-Batches (placeholders first, then real hero in batches)
+   - Tick-render: optimiert (mode change: alle, sonst old+new)
+
+   + LOADER OVERLAY:
+   - Prozentanzeige (0–100%) bis Filmstrip-Heroes initial fertig sind
+
+   + NEW: PREFETCH NEIGHBORS IN INTERACTIVE
+   - Wenn ein Projekt aktiv ist: prev/next werden vorab geladen (HTML + CSS + JS in Cache)
+   - Ausführung/Injection des JS passiert weiterhin NUR beim aktivierten Projekt
+-------------------------------- */
 
 let TICK_COUNT = 20;
 
