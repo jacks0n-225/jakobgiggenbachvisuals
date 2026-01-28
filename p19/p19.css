@@ -1,20 +1,17 @@
-/* ================================
-   p05 — Event Editorial Layout
-   (same type sizes & spacing system)
-   ================================ */
+/* p19 — HolzART Briegel Reel (with video) */
 
-.p05 p{
+.p19 p{
   font-size: 14px;
   line-height: 1.25;
 }
 
-/* Lead */
-.p05 .p05Lead{
+/* Lead/Textblock */
+.p19 .p19Lead{
   align-self: start;
-  padding-right: 10px;
+  padding-right: 0;
 }
 
-.p05 .p05Kicker{
+.p19 .p19Kicker{
   margin: 0 0 8px 0;
   font-size: 18px;
   letter-spacing: .08em;
@@ -22,7 +19,7 @@
   opacity: .75;
 }
 
-.p05 .p05Title{
+.p19 .p19Title{
   margin: 0 0 14px 0;
   font-size: 40px;
   letter-spacing: .06em;
@@ -30,29 +27,21 @@
   line-height: 1;
 }
 
-/* Caption column */
-.p05 .p05CaptionCol{
-  align-self: start;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+.p19 .p19Body{
+  margin: 0 0 10px 0;
+  max-width: 82ch;      /* editorial feel */
+  opacity: .92;
 }
 
-.p05 .p05Caption{
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.15;
-  opacity: .9;
-}
-
-.p05 .p05Rule{
+.p19 .p19Rule{
   height: 1px;
   width: 100%;
   background: rgba(255,255,255,.35);
   opacity: .6;
+  margin: 12px 0 12px 0;
 }
 
-.p05 .p05Meta{
+.p19 .p19Meta{
   margin: 0;
   font-size: 18px;
   letter-spacing: .06em;
@@ -61,26 +50,90 @@
   line-height: 1.2;
 }
 
-/* Media rhythm */
-.p05 .p05Wide{ min-height: 260px; }
-.p05 .p05FullBleed{ min-height: 380px; }
-.p05 .p05BigRight{ min-height: 360px; }
-.p05 .p05Mid{ min-height: 300px; }
+/* Video block: wirkt wie ein hero content */
+.p19 .p19Video{
+  min-height: 420px;
+}
 
-.p05 .p05Outro{ align-self: start; }
-.p05 .p05OutroImg{ min-height: 280px; }
-
-.p05 .p05Small{ min-height: 220px; }
-
-/* subtle editorial frame (optional, consistent with p04) */
-.p05 .media{
+/* Wrapper damit Button overlay stabil ist */
+.p19 .p19VideoWrap{
   position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
-.p05 .media::after{
+
+/* Video wie deine Bilder (kein Balken-Look) */
+.p19 .p19VideoEl{
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;          /* füllt den Frame */
+  background: transparent;
+  cursor: pointer;            /* click toggles play/pause */
+}
+
+/* Round play/pause button – eher subtil */
+.p19 .p19VideoBtn{
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+
+  border: 1.5px solid rgba(255,255,255,.45);
+  background: rgba(0,0,0,.18);
+  color: #fff;
+
+  cursor: pointer;
+  opacity: .45;
+  display: grid;
+  place-items: center;
+
+  transition: opacity .15s ease, transform .15s ease, border-color .15s ease, background .15s ease;
+}
+
+.p19 .p19VideoWrap:hover .p19VideoBtn{
+  opacity: .85;
+  transform: scale(1.05);
+  border-color: rgba(255,255,255,.85);
+  background: rgba(0,0,0,.28);
+}
+
+/* Icon: Play triangle by default */
+.p19 .p19VideoIcon{
+  width: 0;
+  height: 0;
+  border-left: 12px solid currentColor;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  transform: translateX(1px);
+  opacity: .9;
+}
+
+/* When playing: pause bars */
+.p19 .p19VideoWrap.isPlaying .p19VideoIcon{
+  width: 14px;
+  height: 16px;
+  border: 0;
+  position: relative;
+  transform: none;
+}
+
+.p19 .p19VideoWrap.isPlaying .p19VideoIcon::before,
+.p19 .p19VideoWrap.isPlaying .p19VideoIcon::after{
   content:"";
-  position:absolute;
-  inset: 0;
-  pointer-events: none;
-  border: 1px solid rgba(255,255,255,.12);
-  opacity: .55;
+  position: absolute;
+  top: 0;
+  width: 4px;
+  height: 16px;
+  background: currentColor;
+  opacity: .9;
 }
+
+.p19 .p19VideoWrap.isPlaying .p19VideoIcon::before{ left: 2px; }
+.p19 .p19VideoWrap.isPlaying .p19VideoIcon::after{ right: 2px; }
+
+/* optional small photos (wenn du b/c nutzt) */
+.p19 .p19Small{ min-height: 240px; }

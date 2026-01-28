@@ -1,4 +1,4 @@
-window.JG.project.title.t1 = "Editorial / Sedcard";
+window.JG.project.title.t1 = "Editorial - Sedcard";
 window.JG.project.title.t2 = "Lucas Hofmann";
 
 window.JGSetHeroTitle(

@@ -37,8 +37,8 @@ const FALLBACK_HERO_FILE = "assets/fallback-hero.png";
 const DEFAULT_BG = "#212121";
 
 const BG_COLORS = [
-  "#212121","#1e2a2f","#bbbbbb", "#e26c86", "#b498fc", "#7e8d40", "#a99185", "#e3012c", "#46b1d3", "#93807a",
-  "#ab8572", "#71685f","#00519d", "#d4b195", "#be8375", "#e6e2e3", "#b498fc", "#88855a",
+  "#899a77","#a79e8f","#bbbbbb", "#e26c86", "#b498fc", "#7e8d40", "#a99185", "#e3012c", "#46b1d3", "#93807a",
+  "#ab8572", "#71685f","#00519d", "#d4b195", "#be8375", "#e6e2e3", "#b498fc", "#88855a", "#d2ccbc", "#bd8a59", 
 ];
 
 const body = document.body;
@@ -80,6 +80,32 @@ const imgs   = [];
 
 
 /* ---------- Registry ---------- */
+
+
+/* Tags: individuell (hier einfach abwechselnd gesetzt, aber explizit pro Projekt) */
+const TAGS = {
+  "01": ["photo"],
+  "02": ["photo"],
+  "03": ["photo"],
+  "04": ["photo"],
+  "05": ["photo"],
+  "06": ["photo"],
+  "07": ["photo"],
+  "08": ["photo"],
+  "09": ["photo"],
+  "10": ["photo"],
+  "11": ["photo"],
+  "12": ["photo"],
+  "13": ["photo"],
+  "14": ["photo"],
+  "15": ["photo"],
+  "16": ["photo"],
+  "17": ["video"],
+  "18": ["photo"],
+  "19": ["video"],
+  "20": ["video"]
+};
+
 const PROJECTS = PROJECT_IDS.map((id, i) => ({
   id,
   dir: `p${id}`,
@@ -90,9 +116,10 @@ const PROJECTS = PROJECT_IDS.map((id, i) => ({
   title: { t1: "Projekttitel", t2: `Projekt ${id}` },
   bg: BG_COLORS[i] || DEFAULT_BG,
 
-  // tags (abwechselnd)
-  tags: (i % 2 === 0) ? ["photo"] : ["video"]
+  // tags (aus TAGS, fallback wenn id fehlt)
+  tags: TAGS[id] || ["photo"]
 }));
+
 
 function isMobileLike(){
   // 1) echte Touch Phones / kleine Viewports

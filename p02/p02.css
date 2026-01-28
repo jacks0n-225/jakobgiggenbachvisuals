@@ -1,6 +1,7 @@
+/* p02.css */
 /* ================================
-   p02 — Event Editorial Layout
-   (same type sizes & spacing system)
+   p02 — Portrait Layout (vertical images)
+   same editorial type system as old p01
    ================================ */
 
 .p02 p{
@@ -61,26 +62,39 @@
   line-height: 1.2;
 }
 
-/* Media rhythm */
-.p02 .p02Wide{ min-height: 260px; }
-.p02 .p02FullBleed{ min-height: 380px; }
-.p02 .p02BigRight{ min-height: 360px; }
-.p02 .p02Mid{ min-height: 300px; }
+/* Portrait media: force vertical feel */
+.p02 .p02Portrait{
+  min-height: 520px;         /* tall to signal portrait orientation */
+}
 
-.p02 .p02Outro{ align-self: start; }
-.p02 .p02OutroImg{ min-height: 280px; }
+.p02 .p02PortraitWide{
+  min-height: 620px;         /* give the hero portrait more presence */
+}
 
-.p02 .p02Small{ min-height: 220px; }
-
-/* subtle editorial frame (optional, consistent with p04) */
+/* Media framing (same as old p01) */
 .p02 .media{
   position: relative;
+  overflow: hidden;
 }
+
 .p02 .media::after{
   content:"";
   position:absolute;
   inset: 0;
   pointer-events: none;
-  border: 1px solid rgba(255,255,255,.12);
   opacity: .55;
+}
+
+.p02 .media img{
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;         /* keep it clean and consistent */
+  object-position: center;   /* centered portraits */
+}
+
+/* Optional: small spacing correction on very large screens */
+@media (min-width: 1100px){
+  .p02 .p02Portrait{ min-height: 560px; }
+  .p02 .p02PortraitWide{ min-height: 680px; }
 }

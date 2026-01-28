@@ -1,4 +1,4 @@
-window.JG.project.title.t1 = "Event / Reels";
+window.JG.project.title.t1 = "Event - Reels";
 window.JG.project.title.t2 = "KANU — Starthub Augsburg";
 
 window.JGSetHeroTitle(

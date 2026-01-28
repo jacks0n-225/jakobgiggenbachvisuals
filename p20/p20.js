@@ -1,5 +1,5 @@
-window.JG.project.title.t1 = "Event Photography";
-window.JG.project.title.t2 = "KANU — Schwaben Innovation Nexus";
+window.JG.project.title.t1 = "Interior - Reels";
+window.JG.project.title.t2 = "Build Buddies GmbH";
 
 window.JGSetHeroTitle(
   window.JG.project.title.t1,
@@ -14,8 +14,9 @@ window.JGProject = { destroy(){} };
 
   const { mount, project, svgDataURI } = JG;
 
-  mount.querySelectorAll("img[data-seed]").forEach(img => {
-    const seed = img.getAttribute("data-seed") || "x";
+  // Optional: falls du zusätzlich Bilder (b/c/...) drin hast
+  mount.querySelectorAll('img[data-seed]').forEach(img => {
+    const seed = img.getAttribute('data-seed') || 'x';
     const real = `${project.dir}/images/${seed}.jpg`;
 
     img.src = real;
@@ -29,4 +30,39 @@ window.JGProject = { destroy(){} };
       });
     };
   });
+
+  // Video controls
+  const wrap = mount.querySelector('.p20VideoWrap');
+  const video = mount.querySelector('.p20VideoEl');
+  const btn = mount.querySelector('.p20VideoBtn');
+
+  if (!wrap || !video || !btn) return;
+
+  const setUI = () => {
+    wrap.classList.toggle('isPlaying', !video.paused && !video.ended);
+  };
+
+  const toggle = async () => {
+    try{
+      if (video.paused || video.ended) await video.play();
+      else video.pause();
+    }catch{
+      // autoplay restrictions – ignore
+    }
+    setUI();
+  };
+
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    toggle();
+  });
+
+  // Click on video toggles too (nice for reels)
+  video.addEventListener('click', toggle);
+
+  video.addEventListener('play', setUI);
+  video.addEventListener('pause', setUI);
+  video.addEventListener('ended', setUI);
+
+  setUI();
 })();

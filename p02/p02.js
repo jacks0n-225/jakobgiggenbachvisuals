@@ -1,5 +1,6 @@
-window.JG.project.title.t1 = "Event Photography";
-window.JG.project.title.t2 = "KANU — Schwaben Innovation Nexus";
+// p02.js
+window.JG.project.title.t1 = "Portrait Photography";
+window.JG.project.title.t2 = "Art District Augsburg — Team";
 
 window.JGSetHeroTitle(
   window.JG.project.title.t1,
@@ -21,8 +22,8 @@ window.JGProject = { destroy(){} };
     img.src = real;
     img.onerror = () => {
       img.src = svgDataURI({
-        w: 1600,
-        h: 1000,
+        w: 1200,
+        h: 1800,
         label: `${project.dir.toUpperCase()} — ${seed.toUpperCase()}`,
         sub: "IMAGE MISSING",
         bg: "#2a2a2a"

@@ -1,4 +1,4 @@
-window.JG.project.title.t1 = "Portrait / Campaign";
+window.JG.project.title.t1 = "Portrait - Campaign";
 window.JG.project.title.t2 = "SPD Landsberg";
 
 window.JGSetHeroTitle(

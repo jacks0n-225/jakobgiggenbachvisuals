@@ -1,6 +1,6 @@
+/* p01.css */
 /* ================================
-   p01 — Event Editorial Layout
-   (same type sizes & spacing system)
+   p01 — Editorial Layout (like old p01)
    ================================ */
 
 .p01 p{
@@ -61,18 +61,13 @@
   line-height: 1.2;
 }
 
-/* Media rhythm */
+/* Media rhythm (same system, adjusted to 4 images) */
 .p01 .p01Wide{ min-height: 260px; }
-.p01 .p01FullBleed{ min-height: 380px; }
-.p01 .p01BigRight{ min-height: 360px; }
-.p01 .p01Mid{ min-height: 300px; }
+.p01 .p01FullBleed{ min-height: 420px; }
 
 .p01 .p01Outro{ align-self: start; }
-.p01 .p01OutroImg{ min-height: 280px; }
 
-.p01 .p01Small{ min-height: 220px; }
-
-/* subtle editorial frame (optional, consistent with p04) */
+/* subtle editorial frame (optional, consistent with old p01) */
 .p01 .media{
   position: relative;
 }
@@ -81,6 +76,5 @@
   position:absolute;
   inset: 0;
   pointer-events: none;
-  border: 1px solid rgba(255,255,255,.12);
   opacity: .55;
 }

@@ -1,5 +1,6 @@
-window.JG.project.title.t1 = "Event Photography";
-window.JG.project.title.t2 = "KANU — Schwaben Innovation Nexus";
+// p01.js
+window.JG.project.title.t1 = "Interior Design - Renderings";
+window.JG.project.title.t2 = "Sabrina Fein — Alpine Hütte";
 
 window.JGSetHeroTitle(
   window.JG.project.title.t1,

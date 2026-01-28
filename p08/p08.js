@@ -1,4 +1,4 @@
-window.JG.project.title.t1 = "Event / BTS";
+window.JG.project.title.t1 = "Event - BTS";
 window.JG.project.title.t2 = "Sportbrain × GBS GmbH";
 
 window.JGSetHeroTitle(
