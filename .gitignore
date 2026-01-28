@@ -2,6 +2,8 @@
 
 # media
 *.mp4
+!p19/images/*.mp4
+!p20/images/*.mp4
 *.mov
 *.m4v
 .DS_Store
