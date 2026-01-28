@@ -761,7 +761,7 @@ function ensureProjectPrefetchByGlobal(g){
   entry.promise = (async () => {
     let htmlText = null;
     try{
-      const res = await fetch(p.html, { cache: "force-cache" });
+      const res = await fetch(p.html, { cache: "no-store" });
       if (res.ok) htmlText = await res.text();
     }catch{
       htmlText = null;
