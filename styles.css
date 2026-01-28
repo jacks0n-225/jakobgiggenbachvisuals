@@ -600,3 +600,35 @@ body.interactive .sideNav{ display: block; }
 
 /* Hide old text arrows if still present */
 .sideBtn .arrow{ display:none; }
+
+
+/* ---------- LOADER OVERLAY ---------- */
+.loaderOverlay{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  background: var(--bg);
+  color: var(--text);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  opacity: 1;
+  transition: opacity .28s ease;
+}
+
+.loaderOverlay.isDone{
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loaderPercent{
+  font-size: 22px;              /* exakt wie brand/about/footer links */
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  line-height: 1;
+  opacity: .95;
+  user-select: none;
+}

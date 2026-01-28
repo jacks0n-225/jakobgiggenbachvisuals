@@ -14,23 +14,16 @@
    - Wheel reset + stage metrics/padding in rAF
 
    + PERFORMANCE OPTIMIZATIONS (FILMSTRIP FAST):
-   1) Tick-Updates: KEINE schweren inline-style-loops mehr → nur class toggles
-      (du musst dafür 4 kleine CSS-Regeln ergänzen, siehe Kommentar unten)
-   2) Scroll/Tick-Sync: scroll listener ist rAF-throttled (max 1x pro Frame)
-   3) Wheel smooth: keine doppelten sync-calls mehr beim Stop
-   4) Hero-Bilder im Filmstrip: werden nach erstem Paint in kleinen Batches gesetzt
-      (damit initial render + scroll nicht stottert) – aber am Ende werden ALLE Hero
-      angezeigt (keine "nur placeholder bei schnellem Scrollen")
+   - Scroll/Tick-Sync rAF-throttled
+   - Filmstrip-Hero-Batches (placeholders first, then real hero in batches)
+   - Tick-render: optimiert (mode change: alle, sonst old+new)
 
-   ⚠️ WICHTIG (CSS):
-   Ergänze in styles.css (Tick-Klassen), sonst sieht active tick evtl. nicht korrekt aus:
+   + LOADER OVERLAY:
+   - Prozentanzeige (0–100%) bis Filmstrip-Heroes initial fertig sind
 
-   .tick{ background: rgba(255,255,255,.25); width:1.5px; border:0 solid rgba(255,255,255,0); }
-   .tick.is-active{ background: rgba(255,255,255,.95); }
-   body.interactive .tick{ background: rgba(255,255,255,.25); }
-   body.interactive .tick.is-active{ width:34px; border-width:1.5px; border-color: rgba(255,255,255,.95); background: rgba(255,255,255,0); }
-   body.interactive .tick.is-active .tickX{ opacity:1; }
-
+   + NEW: PREFETCH NEIGHBORS IN INTERACTIVE
+   - Wenn ein Projekt aktiv ist: prev/next werden vorab geladen (HTML + CSS + JS in Cache)
+   - Ausführung/Injection des JS passiert weiterhin NUR beim aktivierten Projekt
 -------------------------------- */
 
 let TICK_COUNT = 20;
@@ -62,11 +55,13 @@ const optPhoto     = document.getElementById("optPhoto");
 const optVideo     = document.getElementById("optVideo");
 const filterClose  = document.getElementById("filterClose");
 
+/* Loader elements (Overlay in index.html) */
+const loaderOverlay = document.getElementById("loaderOverlay");
+const loaderPercent = document.getElementById("loaderPercent");
+
 let mode = "idle";
 
-/* IMPORTANT:
-   activeIndex ist immer der Index innerhalb der aktuell sichtbaren (gefilterten) Reihenfolge.
-*/
+/* activeIndex ist immer VISIBLE index (gefilterte Reihenfolge) */
 let activeIndex = 0;
 
 /* Filter state + visible mapping */
@@ -93,7 +88,7 @@ const PROJECTS = PROJECT_IDS.map((id, i) => ({
   title: { t1: "Projekttitel", t2: `Projekt ${id}` },
   bg: BG_COLORS[i] || DEFAULT_BG,
 
-  // ✅ tags (vorerst beispielhaft, abwechselnd ok)
+  // tags (abwechselnd)
   tags: (i % 2 === 0) ? ["photo"] : ["video"]
 }));
 
@@ -186,6 +181,60 @@ function centerIndexInstant(idx){
   scroller.scrollLeft = clamp(desired, 0, scroller.scrollWidth - scroller.clientWidth);
 }
 
+/* ---------- LOADER OVERLAY (Filmstrip hero preloads) ---------- */
+function setLoaderPercent(pct){
+  if (!loaderPercent) return;
+  loaderPercent.textContent = `${clamp(Math.round(pct), 0, 100)}%`;
+}
+
+function finishLoader(){
+  if (!loaderOverlay) return;
+  loaderOverlay.classList.add("isDone");
+  loaderOverlay.setAttribute("aria-hidden", "true");
+  setTimeout(() => {
+    try { loaderOverlay.remove(); } catch {}
+  }, 320);
+}
+
+function preloadFilmstripHeroesWithProgress(){
+  if (!loaderOverlay) return;
+
+  const sources = visibleIndices
+    .map((g) => PROJECTS[g]?.hero)
+    .filter(Boolean);
+
+  const total = sources.length;
+  if (total <= 0){
+    setLoaderPercent(100);
+    finishLoader();
+    return;
+  }
+
+  let done = 0;
+  setLoaderPercent(0);
+
+  const bump = () => {
+    done++;
+    const pct = (done / total) * 100;
+    setLoaderPercent(pct);
+    if (done >= total){
+      setTimeout(() => {
+        setLoaderPercent(100);
+        finishLoader();
+      }, 120);
+    }
+  };
+
+  // parallel preload (nur heroes)
+  for (const src of sources){
+    const img = new Image();
+    img.decoding = "async";
+    img.onload = bump;
+    img.onerror = bump;
+    img.src = src;
+  }
+}
+
 /* ---------- Filmstrip Hero loading (batch after first paint) ---------- */
 let filmHeroToken = 0;
 let filmHeroRaf = null;
@@ -205,7 +254,6 @@ function setFilmHeroNow(vIdx){
   const ph  = img.dataset.ph;
   if (!src) return;
 
-  // decoding async hilft gegen jank beim Bildwechsel
   img.decoding = "async";
   setImgWithFallback(img, src, ph);
   img.dataset.loaded = "1";
@@ -218,7 +266,6 @@ function scheduleFilmHeroesLoadAll(priorityIndex = 0){
   const n = visibleCount();
   if (n <= 0) return;
 
-  // Reihenfolge: erst active + Nachbarn, dann rest
   const radius = 3;
   const order = [];
   const used = new Set();
@@ -242,7 +289,6 @@ function scheduleFilmHeroesLoadAll(priorityIndex = 0){
   const step = () => {
     if (token !== filmHeroToken) return;
 
-    // kleines Batch pro Frame => smooth scroll + schneller "fill"
     const BATCH = 4;
     let c = 0;
 
@@ -263,16 +309,13 @@ function scheduleFilmHeroesLoadAll(priorityIndex = 0){
 }
 
 /* ---------- Active Index ---------- */
-/* Idle: kein modulo */
 function setActiveIndex(i){
   const n = visibleCount();
   activeIndex = clamp(i, 0, Math.max(0, n - 1));
   setTicks(true);
 
-  // (Optional) active-Hero sofort priorisieren, damit active nie placeholder ist
   if (mode === "idle"){
     setFilmHeroNow(activeIndex);
-    // re-priorisieren, aber nicht zu aggressiv (nur wenn initial noch am laden)
     scheduleFilmHeroesLoadAll(activeIndex);
   }
 
@@ -300,8 +343,6 @@ function syncActiveIndexFromFilmstripImmediate(){
   if (idx !== activeIndex){
     activeIndex = idx;
     setTicks(false);
-
-    // active hero sofort + queue weiterlaufen lassen
     setFilmHeroNow(activeIndex);
   }
 }
@@ -332,7 +373,6 @@ function buildTicks(){
   }
 }
 
-/* ✅ PERFORMANCE: setTicks nur via Klassen togglen (keine schweren inline style loops) */
 function renderTickAt(i, activeTick){
   const t = ticks[i];
   const x = tickX[i];
@@ -347,14 +387,12 @@ function renderTickAt(i, activeTick){
     return;
   }
 
-  // interactive default state
   t.style.width = "1.5px";
   t.style.borderWidth = "0px";
   t.style.borderColor = "rgba(255,255,255,0)";
   t.style.background = "rgba(255,255,255,.25)";
   x.style.opacity = "0";
 
-  // active tick in interactive = rectangle + X
   if (i === activeTick){
     t.style.width = "34px";
     t.style.borderWidth = "1.5px";
@@ -368,19 +406,16 @@ function setTicks(force = false){
   const n = ticks.length;
   const activeTick = clamp(activeIndex, 0, Math.max(0, n - 1));
 
-  // nothing changed
   if (!force && activeTick === lastTickIndex && mode === lastTickMode) return;
 
   const modeChanged = (mode !== lastTickMode);
   const prev = lastTickIndex;
 
-  // Wenn Mode geändert wurde: alles neu rendern (sonst könnten Styles "hängenbleiben")
   if (modeChanged){
     for (let i = 0; i < n; i++){
       renderTickAt(i, activeTick);
     }
   } else {
-    // Sonst nur: alter + neuer Tick (super schnell)
     if (prev >= 0 && prev < n) renderTickAt(prev, activeTick);
     renderTickAt(activeTick, activeTick);
   }
@@ -388,7 +423,6 @@ function setTicks(force = false){
   lastTickIndex = activeTick;
   lastTickMode = mode;
 }
-
 
 /* ---------- Filmstrip ---------- */
 function buildFilmstrip(){
@@ -405,16 +439,14 @@ function buildFilmstrip(){
     const img = document.createElement("img");
     img.alt = `Projekt ${p.id}`;
 
-    // Placeholder sofort (nie weiße Artefakte)
+    // Placeholder sofort
     const ph = svgDataURI({ w: 900, h: 1400, label: `P${p.id}`, sub: "FILMSTRIP", bg:"#242424" });
     img.src = ph;
 
-    // echtes hero kommt per Batch nach erstem Paint:
+    // echtes hero per batch
     img.dataset.src = p.hero;
     img.dataset.ph = ph;
     img.dataset.loaded = "0";
-
-    // decoding async => weniger main-thread spikes
     img.decoding = "async";
 
     item.appendChild(img);
@@ -455,14 +487,11 @@ function wheelAnimate(t){
   const alpha = 1 - Math.pow(pow, dt);
 
   scroller.scrollLeft = current + dist*alpha;
-
-  // ✅ nur hier syncen; scroll-event ist rAF-throttled und fängt den Rest ab
   syncActiveIndexFromFilmstripImmediate();
 
   if (Math.abs(dist) < 0.5){
     scroller.scrollLeft = target;
     stopWheel();
-    // ✅ KEIN extra sync hier (spart doppelte Arbeit)
     return;
   }
   wheelRaf = requestAnimationFrame(wheelAnimate);
@@ -483,7 +512,6 @@ function bindFilmstripWheel(){
     if (!wheelRaf) wheelRaf = requestAnimationFrame(wheelAnimate);
   }, { passive:false });
 
-  // ✅ PERFORMANCE: scroll sync rAF-throttled (max 1x/frame)
   let scrollSyncRaf = null;
   scroller.addEventListener("scroll", () => {
     if (mode !== "idle") return;
@@ -495,7 +523,7 @@ function bindFilmstripWheel(){
   }, { passive:true });
 }
 
-/* ---------- Interactive Viewer (created by JS) ---------- */
+/* ---------- Interactive Viewer ---------- */
 let viewer = null;
 let projectScroll = null;
 let hero = null;
@@ -621,6 +649,74 @@ function updateSideSlotMetrics(){
   document.documentElement.style.setProperty("--heroRightPx", `${Math.round(heroRight)}px`);
 }
 
+/* ---------- Project Cache + Prefetch (NEW) ---------- */
+// Cache keyed by GLOBAL index
+const projectCache = new Map(); // g -> { htmlText: string|null, htmlOk: boolean, promise: Promise<string|null> }
+const preloadLinks = new Set(); // hrefs to avoid duplicate <link rel="preload">
+
+function ensurePreloadLink(href, as){
+  // rel=preload ist optional; wenn Browser es nicht nutzt, schadet es nicht.
+  // Wichtig: wir deduplizieren.
+  if (!href || preloadLinks.has(href)) return;
+  preloadLinks.add(href);
+
+  const link = document.createElement("link");
+  link.rel = "preload";
+  link.as = as;
+  link.href = href;
+  document.head.appendChild(link);
+}
+
+function ensureProjectPrefetchByGlobal(g){
+  const p = PROJECTS[g];
+  if (!p) return Promise.resolve(null);
+
+  // CSS/JS preloads (cache warm)
+  ensurePreloadLink(p.css, "style");
+  ensurePreloadLink(p.js, "script");
+
+  // HTML fetch in cache
+  const existing = projectCache.get(g);
+  if (existing?.promise) return existing.promise;
+
+  const entry = existing || { htmlText: null, htmlOk: false, promise: null };
+  entry.promise = (async () => {
+    let htmlText = null;
+    try{
+      const res = await fetch(p.html, { cache: "force-cache" });
+      if (res.ok) htmlText = await res.text();
+    }catch{
+      htmlText = null;
+    }
+    entry.htmlText = htmlText;
+    entry.htmlOk = (htmlText != null);
+    entry.promise = null;
+    projectCache.set(g, entry);
+    return htmlText;
+  })();
+
+  projectCache.set(g, entry);
+  return entry.promise;
+}
+
+function prefetchNeighbors(visibleIdx){
+  if (mode !== "interactive") return;
+
+  const n = visibleCount();
+  if (n <= 1) return;
+
+  const prevV = wrapIndex(visibleIdx - 1);
+  const nextV = wrapIndex(visibleIdx + 1);
+
+  const prevG = vToG(prevV);
+  const nextG = vToG(nextV);
+
+  // fire & forget
+  ensureProjectPrefetchByGlobal(prevG);
+  ensureProjectPrefetchByGlobal(nextG);
+}
+
+/* ---------- Project load/unload ---------- */
 async function unloadCurrentProject(){
   if (typeof currentProject.destroy === "function"){
     try { currentProject.destroy(); } catch {}
@@ -652,21 +748,28 @@ function injectJS(src){
   });
 }
 
-/* index ist VISIBLE index (wichtig für Filter-Reihenfolge) */
+/* index ist VISIBLE index */
 async function loadProject(index, token){
   if (visibleCount() === 0) return;
 
-  const p = getProjectByVisibleIndex(index);
+  const g = vToG(index);
+  const p = PROJECTS[g];
 
   await unloadCurrentProject();
   if (token !== loadToken) return;
 
+  // ✅ Use cache if exists, otherwise fetch now
   let htmlText = null;
-  try{
-    const res = await fetch(p.html, { cache:"no-store" });
-    if (res.ok) htmlText = await res.text();
-  }catch{
+  const cached = projectCache.get(g);
+
+  if (cached?.htmlText !== undefined && cached.htmlText !== null){
+    htmlText = cached.htmlText;
+  } else if (cached?.htmlOk === false && cached.htmlText === null && !cached.promise){
+    // known-miss
     htmlText = null;
+  } else {
+    // ensure prefetch (will fill cache)
+    htmlText = await ensureProjectPrefetchByGlobal(g);
   }
 
   if (token !== loadToken) return;
@@ -686,11 +789,10 @@ async function loadProject(index, token){
   currentProject.styleEl = await injectCSS(p.css);
   if (token !== loadToken) return;
 
-  // global index wird mitgegeben (praktisch für Projekte)
-  const globalIndex = vToG(index);
-  window.JG = { svgDataURI, project: p, index: globalIndex, visibleIndex: index, mount: projectMount, filter: filterState };
+  window.JG = { svgDataURI, project: p, index: g, visibleIndex: index, mount: projectMount, filter: filterState };
   window.JGProject = null;
 
+  // JS nur beim aktiven Projekt ausführen (wie gehabt)
   currentProject.scriptEl = await injectJS(p.js);
   if (token !== loadToken) return;
 
@@ -768,11 +870,17 @@ async function gotoProject(index){
   setImgWithFallback(leftSlotImg, prevP.hero, prevPH);
   setImgWithFallback(rightSlotImg, nextP.hero, nextPH);
 
+  // ✅ NEW: Prefetch neighbor contents NOW (HTML+CSS+JS cached, JS not executed)
+  prefetchNeighbors(activeIndex);
+
   await loadProject(activeIndex, token);
   if (token !== loadToken) return;
 
   requestAnimationFrame(updateSideSlotMetrics);
   setTicks(true);
+
+  // ✅ After load: prefetch again (safe) in case activeIndex changed fast
+  prefetchNeighbors(activeIndex);
 }
 
 /* ---------- Input bindings ---------- */
@@ -808,7 +916,7 @@ function bindHome(){
   });
 }
 
-/* ---------- FILTER: UI + Logic ---------- */
+/* ---------- FILTER ---------- */
 function computeVisibleIndices(nextFilter){
   if (nextFilter === "photo"){
     return PROJECTS.map((p,i) => p.tags?.includes("photo") ? i : -1).filter(i => i >= 0);
@@ -879,18 +987,13 @@ function rebuildFilmstripAndTicksKeepingIndex(prevGlobalIndex){
     updateSidePadding();
     updateStageMetrics();
 
-    if (visibleCount() > 0){
-      centerIndexInstant(activeIndex);
-    } else {
-      scroller.scrollLeft = 0;
-    }
+    if (visibleCount() > 0) centerIndexInstant(activeIndex);
+    else scroller.scrollLeft = 0;
 
-    // tick state korrekt + active sofort
     setActiveIndex(activeIndex);
     syncActiveIndexFromFilmstripImmediate();
     setTicks(true);
 
-    // ✅ nach rebuild: alle hero in batches (active priorisiert)
     scheduleFilmHeroesLoadAll(activeIndex);
   });
 }
@@ -931,7 +1034,7 @@ function bindFilterUI(){
   optVideo.addEventListener("click", () => applyFilter("video"));
 }
 
-/* ---------- init / rebuild bootstrap ---------- */
+/* ---------- init ---------- */
 function initVisibleAll(){
   filterState = "all";
   visibleIndices = computeVisibleIndices("all");
@@ -960,8 +1063,12 @@ function initBuildAll(){
   updateStageMetrics();
 }
 
-/* ---------- init ---------- */
-function init(){
+async function init(){
+  // stabiler Loader-Text (Font-Metriken)
+  try{
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+  }catch{}
+
   initVisibleAll();
   initBuildAll();
 
@@ -980,11 +1087,14 @@ function init(){
 
   body.style.backgroundColor = DEFAULT_BG;
 
-  // ✅ wichtig: erst rendern lassen, dann batches -> deutlich weniger initial jank
+  // Filmstrip heroes batches
   requestAnimationFrame(() => {
-    setFilmHeroNow(activeIndex);            // active sofort
-    scheduleFilmHeroesLoadAll(activeIndex); // dann alle
+    setFilmHeroNow(activeIndex);
+    scheduleFilmHeroesLoadAll(activeIndex);
   });
+
+  // ✅ LOADER: Prozent bis alle Filmstrip-Heroes initial geladen/fehlerhaft
+  preloadFilmstripHeroesWithProgress();
 }
 
 window.addEventListener("resize", () => {
@@ -995,7 +1105,6 @@ window.addEventListener("resize", () => {
     syncActiveIndexFromFilmstripImmediate();
     setTicks(true);
 
-    // nach resize: batches neu priorisieren
     requestAnimationFrame(() => {
       setFilmHeroNow(activeIndex);
       scheduleFilmHeroesLoadAll(activeIndex);
