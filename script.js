@@ -272,7 +272,7 @@ function updateStageMetrics(){
 
   // echtes Mobile (nicht nur "schmaler Desktop")
   const isMobile = isMobileLike();
-  const MOBILE_STAGE_SCALE = 0.72; // <- 0.65–0.80
+  const MOBILE_STAGE_SCALE = 0.9; // <- 0.65–0.80
 
   let stageTop = 0;
   let stageH = 0;
