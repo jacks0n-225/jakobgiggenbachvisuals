@@ -265,18 +265,47 @@ function updateStageMetrics(){
   if (!main) return;
 
   const mainRect = main.getBoundingClientRect();
-  const scrollerRect = scroller.getBoundingClientRect();
 
   const cs = getComputedStyle(scroller);
   const padTop = parseFloat(cs.paddingTop) || 0;
   const padBot = parseFloat(cs.paddingBottom) || 0;
 
-  const filmH = scrollerRect.height - padTop - padBot;
-  const stageTop = mainRect.top + (mainRect.height - scrollerRect.height) / 2 + padTop;
+  // echtes Mobile (nicht nur "schmaler Desktop")
+  const isMobile = isMobileLike();
+  const MOBILE_STAGE_SCALE = 0.72; // <- 0.65–0.80
 
-  document.documentElement.style.setProperty("--stageTop", `${Math.round(stageTop)}px`);
-  document.documentElement.style.setProperty("--stageH", `${Math.round(filmH)}px`);
+  let stageTop = 0;
+  let stageH = 0;
+
+  if (!isMobile){
+    // ==============================
+    // DESKTOP: 1:1 deine alte Logik
+    // ==============================
+    const scrollerRect = scroller.getBoundingClientRect();
+
+    const filmH = scrollerRect.height - padTop - padBot;
+    const top = mainRect.top + (mainRect.height - scrollerRect.height) / 2 + padTop;
+
+    stageH = Math.round(filmH);
+    stageTop = Math.round(top);
+  } else {
+    // ==========================================
+    // MOBILE: stabil aus MAIN-Höhe (kein Drift)
+    // ==========================================
+    const avail = mainRect.height;                 // Höhe zwischen Header/Footer
+    stageH = Math.round(avail * MOBILE_STAGE_SCALE);
+
+    // Safety: niemals 0
+    stageH = Math.max(180, stageH);
+
+    // zentriert innerhalb main
+    stageTop = Math.round(mainRect.top + (avail - stageH) / 2);
+  }
+
+  document.documentElement.style.setProperty("--stageTop", `${stageTop}px`);
+  document.documentElement.style.setProperty("--stageH", `${stageH}px`);
 }
+
 
 function centerIndexInstant(idx){
   if (!frames[idx]) return;

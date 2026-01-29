@@ -274,7 +274,7 @@ body.interactive .tick:hover .tickX{
 }
 .film__scroller{
   width: 100%;
-  height: min(74vh, 720px);
+  height: var(--stageH);
   display:flex;
   gap: 10px;
   overflow-x: auto;
