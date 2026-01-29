@@ -226,3 +226,7 @@
     touch-action: pan-y; /* vertikal scrollen erlauben */
   }
 }
+
+/* === FORCE DISABLE MOBILE GATE (FINAL OVERRIDE) === */
+#mobileGate{ display: none !important; }
+body > .frame{ display: block !important; }
