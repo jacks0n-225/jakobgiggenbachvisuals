@@ -644,20 +644,9 @@ body.interactive .sideNav{ display: block; }
   display: none; /* desktop: off */
 }
 
-@media (hover: none) and (pointer: coarse), (max-width: 900px){
-  body > .frame{
-    display: none !important;
-  }
+/* MOBILE GATE OFF */
+#mobileGate{ display: none !important; }
 
-  #mobileGate{
-    display: block !important;
-  }
-
-  html, body{
-    overflow: hidden !important;
-    height: 100% !important;
-  }
-}
 
 /* =========================================================
    MobileGate layout — same as ABOUT/IMPRINT (pages.css look)
@@ -777,3 +766,38 @@ body.interactive .sideNav{ display: block; }
     text-align: left;
   }
 }
+
+@media (max-width: 900px), (hover: none) and (pointer: coarse){
+
+  :root{
+    --pad: 12px;          /* optional: bisschen enger */
+    --heroW: 100%;        /* HERO über volle Breite */
+    --heroMaxW: 9999px;   /* keine künstliche Begrenzung */
+  }
+
+  /* Side previews komplett weg auf Mobile */
+  .sideNav{
+    display: none !important;
+  }
+
+  /* HeroWrap wirklich full width im Viewer */
+  .heroWrap{
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Optional: weniger riesige Titel */
+  .heroTitle .t1{ font-size: 38px; }
+  .heroTitle .t2{ font-size: 24px; }
+
+  /* Wichtig: Mobile scrollt im projectScroll, body bleibt locked wie bei dir */
+  .projectScroll{
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y; /* vertikal scrollen erlauben */
+  }
+}
+
+/* === FORCE DISABLE MOBILE GATE (FINAL OVERRIDE) === */
+#mobileGate{ display: none !important; }
+body > .frame{ display: block !important; }
