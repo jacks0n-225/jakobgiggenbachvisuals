@@ -1039,6 +1039,96 @@ function bindHome(){
   });
 }
 
+function bindSwipeNav(){
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+  let locked = false;     // sobald wir entschieden haben "horizontal", locken wir
+  let fired = false;
+
+  const SWIPE_PX = 42;    // threshold
+  const ANGLE_BIAS = 1.15; // dx muss deutlich größer als dy sein
+
+  const onDown = (e) => {
+    if (mode !== "interactive") return;
+    if (!projectScroll) return;
+
+    tracking = true;
+    locked = false;
+    fired = false;
+
+    startX = e.clientX;
+    startY = e.clientY;
+
+    // wichtig: pointer capture, damit move/up zuverlässig kommt
+    try { projectScroll.setPointerCapture(e.pointerId); } catch {}
+  };
+
+  const onMove = (e) => {
+    if (!tracking || mode !== "interactive") return;
+    if (!projectScroll) return;
+
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+
+    const adx = Math.abs(dx);
+    const ady = Math.abs(dy);
+
+    // Wenn wir noch nicht entschieden haben: prüfen ob horizontale Geste
+    if (!locked){
+      // wenn vertikal dominiert → NICHT blockieren (Scroll soll normal laufen)
+      if (ady > adx) return;
+
+      // horizontal dominiert genug?
+      if (adx > ady * ANGLE_BIAS && adx > 10){
+        locked = true;
+      } else {
+        return;
+      }
+    }
+
+    // ab hier: horizontal swipe → default verhindern (damit kein weird scroll)
+    e.preventDefault();
+
+    if (fired) return;
+    if (adx >= SWIPE_PX){
+      fired = true;
+
+      if (dx < 0) gotoProject(activeIndex + 1); // swipe left => next
+      else gotoProject(activeIndex - 1);        // swipe right => prev
+
+      tracking = false;
+    }
+  };
+
+  const onUp = (e) => {
+    tracking = false;
+    locked = false;
+    fired = false;
+    try { projectScroll.releasePointerCapture(e.pointerId); } catch {}
+  };
+
+  // pointer events auf projectScroll (damit vertical scroll weiterhin funktioniert)
+  const attach = () => {
+    if (!projectScroll) return;
+    projectScroll.addEventListener("pointerdown", onDown, { passive: true });
+    projectScroll.addEventListener("pointermove", onMove, { passive: false });
+    projectScroll.addEventListener("pointerup", onUp, { passive: true });
+    projectScroll.addEventListener("pointercancel", onUp, { passive: true });
+  };
+
+  // attach sofort + auch dann nochmal, wenn Viewer erstellt wurde
+  attach();
+
+  // falls ensureViewer() erst später projectScroll erstellt:
+  const oldEnsureViewer = ensureViewer;
+  ensureViewer = function(){
+    oldEnsureViewer();
+    attach();
+  };
+}
+
+
 /* ---------- FILTER ---------- */
 function computeVisibleIndices(nextFilter){
   if (nextFilter === "photo"){
@@ -1190,11 +1280,11 @@ async function init(){
   // Mobile gate (layout measurement kostet nix)
   bindMobileGateMeasure();
 
-  // Wenn Mobile: sofort stop
-  if (isMobileLike()){
-    openMobileGateAndStop();
-    return;
-  }
+// Mobile: kein Gate mehr
+// if (isMobileLike()){
+//   openMobileGateAndStop();
+//   return;
+// }
 
   // 1) Filter/visibleIndices muss stehen, bevor Loader preloads startet
   initVisibleAll();
@@ -1216,6 +1306,8 @@ async function init(){
   bindScrollHint();
   bindHome();
   bindFilterUI();
+  bindSwipeNav();
+
 
   // 6) Startposition / States
   const start = Math.min(1, Math.max(0, visibleCount() - 1));

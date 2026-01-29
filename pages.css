@@ -191,31 +191,38 @@
   border-bottom-color: rgba(255,255,255,.6);
 }
 
-/* Responsive */
-@media (max-width: 900px){
-  .pageTitle{
-    position: static;
-    white-space: normal;
+/* MOBILE GATE OFF */
+#mobileGate{ display: none !important; }
+
+
+
+@media (max-width: 900px), (hover: none) and (pointer: coarse){
+
+  :root{
+    --pad: 12px;          /* optional: bisschen enger */
+    --heroW: 100%;        /* HERO über volle Breite */
+    --heroMaxW: 9999px;   /* keine künstliche Begrenzung */
   }
 
-  .pageBody{
-    position: static;
-    width: 100%;
-    margin-top: 14px;
+  /* Side previews komplett weg auf Mobile */
+  .sideNav{
+    display: none !important;
   }
 
-  .pageAside{
-    position: static;
-    transform: none;
-    margin-top: 22px;
-    text-align: left;
-    width: 100%;
+  /* HeroWrap wirklich full width im Viewer */
+  .heroWrap{
+    width: 100% !important;
+    margin: 0 !important;
   }
 
-  .imprintGrid{
-    grid-template-columns: 1fr;
-    width: 100%;
+  /* Optional: weniger riesige Titel */
+  .heroTitle .t1{ font-size: 38px; }
+  .heroTitle .t2{ font-size: 24px; }
+
+  /* Wichtig: Mobile scrollt im projectScroll, body bleibt locked wie bei dir */
+  .projectScroll{
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y; /* vertikal scrollen erlauben */
   }
 }
-
-
