@@ -1374,4 +1374,4 @@ window.addEventListener("resize", () => {
 });
 
 window.addEventListener("load", init);
-init();
+
